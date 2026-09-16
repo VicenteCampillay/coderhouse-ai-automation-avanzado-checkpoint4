@@ -1,0 +1,218 @@
+{
+  "name": "Checkpoint2_WorkerDos_Vicente_Campillay",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "output_detalle",
+              "type": "any"
+            },
+            {
+              "name": "output_estado",
+              "type": "any"
+            },
+            {
+              "name": "horas_extras",
+              "type": "any"
+            },
+            {
+              "name": "chatInput",
+              "type": "any"
+            },
+            {
+              "name": "motivo",
+              "type": "any"
+            },
+            {
+              "name": "fecha",
+              "type": "any"
+            },
+            {
+              "name": "email_solicitante"
+            }
+          ]
+        }
+      },
+      "id": "9f058f91-cd8a-46e6-b785-118e12b2e1e6",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -624,
+        -1856
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Formatea el siguiente caso según las reglas de tu System Message. Devuelve solo el JSON correspondiente.\n\nDatos del caso:\n- mensaje_usuario: {{ $('Start').item.json.chatInput }}\n- estado: {{ $('Start').item.json.output_estado }}\n- horas_extras: {{ $('Start').item.json.horas_extras }}\n- fecha: {{ $('Start').item.json.fecha }}\n- motivo: {{ $('Start').item.json.motivo }}\n- resolucion: {{ $('Start').item.json.output_detalle }}\n- email_solicitante: {{ $json.email_solicitante }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Eres el Worker \"Email-Formatter\" dentro de una arquitectura Manager-Worker en n8n. Tu única función es recibir los datos crudos de un caso y devolver un objeto JSON estructurado. No respondes al usuario final, no tomas decisiones de negocio y no ejecutas ninguna herramienta.\n\nREGLAS DE NORMALIZACIÓN (aplícalas en este orden):\n\n1. mensaje_original: copia LITERAL del mensaje del usuario recibido. Prohibido resumir, parafrasear, corregir ortografía o alterar una sola palabra. Es un campo de auditoría.\n\n2. fecha: normaliza a formato ISO 8601 (YYYY-MM-DD). Si el dato de entrada es ambiguo, relativo (\"ayer\", \"la semana pasada\") o no puedes determinarlo con certeza absoluta, usa null. Nunca inventes ni asumas una fecha.\n\n3. estado: clasifícalo ÚNICAMENTE dentro de este set cerrado:\n   [\"pendiente\", \"aprobado\", \"rechazado\", \"en_revision\"]\n   Si el valor de entrada no coincide claramente con ninguno, usa \"sin_clasificar\". Nunca generes un valor fuera de esta lista.\n\n4. horas_extras: conviértelo a número (float). Si no es convertible a número válido, usa null. Nunca redondees ni asumas un valor no presente en la entrada.\n\n5. motivo: limpia redacción (ortografía, espacios, mayúsculas) conservando el sentido original. No agregues información nueva.\n\n6. resolucion: mismo criterio que motivo. Si no hay resolución reportada (campo vacío o nulo), usa null — no inventes un cierre de caso.\n\n7. resumen_ejecutivo: redacta una síntesis de máximo 2 líneas, tono profesional y neutro, combinando motivo + resolución. Prohibido inventar datos, cifras o conclusiones que no estén explícitamente en la entrada.\n\nMANEJO DE ERRORES:\nSi falta un dato crítico para completar el análisis (por ejemplo, motivo vacío/nulo, o mensaje_usuario vacío), no intentes rellenar el vacío. En su lugar, responde con status \"error\" y describe el problema puntual en el campo \"error\".\n\nFORMATO DE SALIDA:\nResponde EXCLUSIVAMENTE con el objeto JSON definido en el output parser. Sin texto explicativo antes o después, sin markdown, sin bloques de código, sin comillas triples. Solo el JSON puro.",
+          "maxIterations": 6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -416,
+        -1856
+      ],
+      "id": "ba90dcce-6881-42e5-8969-d6eae4a64733",
+      "name": "Formador Correo"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-5-20250929",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        -416,
+        -1632
+      ],
+      "id": "8170a7f0-cba0-484b-96b6-a678f7368df7",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "dIKE8OrZIKAubgaI",
+          "name": "Anthropic account Coni"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": {\n      \"type\": \"string\",\n      \"enum\": [\"success\", \"error\"]\n    },\n    \"data\": {\n      \"type\": [\"object\", \"null\"],\n      \"properties\": {\n        \"fecha\": { \"type\": [\"string\", \"null\"] },\n        \"estado\": {\n          \"type\": \"string\",\n          \"enum\": [\"pendiente\", \"aprobado\", \"rechazado\", \"en_revision\", \"sin_clasificar\"]\n        },\n        \"motivo\": { \"type\": [\"string\", \"null\"] },\n        \"horas_extras\": { \"type\": [\"number\", \"null\"] },\n        \"resolucion\": { \"type\": [\"string\", \"null\"] },\n        \"resumen_ejecutivo\": { \"type\": [\"string\", \"null\"] },\n        \"mensaje_original\": { \"type\": \"string\" },\n        \"email_solicitante\": { \"type\": [\"string\", \"null\"] }\n      },\n      \"required\": [\"fecha\", \"estado\", \"motivo\", \"horas_extras\", \"resolucion\", \"resumen_ejecutivo\", \"mensaje_original\", \"email_solicitante\"]\n    },\n    \"error\": { \"type\": [\"string\", \"null\"] }\n  },\n  \"required\": [\"status\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -1632
+      ],
+      "id": "c37f3f3e-0b0f-47c2-ae83-32fb5b16b913",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Formador Correo').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        -1856
+      ],
+      "id": "720ac0e2-2048-4717-99ef-5a8c13acd43b",
+      "name": "Reafirmar Retorno"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Estado Horas Extras: {{ $json.output?.data?.estado ? $json.output.data.estado.toUpperCase() : $json.ruta }}",
+        "message": "=ESTADO INGRESO - HORAS EXTRAS\n\n{{ $json.output.data.estado }}\n\nDatos Ingresados:\n\nFecha: {{ $json.output.data.fecha }}\nHoras Extras: {{ $json.output.data.horas_extras }}\nMotivo: {{ $json.output.data.motivo }}\n\nDetalles Resultado:\n\n{{ $json.output.data.resolucion }}",
+        "options": {
+          "sendTo": "={{ $json.output?.data?.email_solicitante ?? 'vicentecampillaymg@gmail.com' }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        -1856
+      ],
+      "id": "905b8e23-1435-471d-88e6-2e537a0ebe51",
+      "name": "Crear Borrador de Correo (HITL)",
+      "webhookId": "56f83ef7-17c7-46bd-b207-8a5521122309",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pZAVB1mYZnn8fPvF",
+          "name": "Gmail - VicenteC"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Formador Correo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formador Correo": {
+      "main": [
+        [
+          {
+            "node": "Crear Borrador de Correo (HITL)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Formador Correo",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Formador Correo",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Borrador de Correo (HITL)": {
+      "main": [
+        [
+          {
+            "node": "Reafirmar Retorno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "64c30028-fb19-42d3-a8c5-e9909144ad00",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4adfb8248a637bb52a45eab840dc805cd709e062fef9162bbbf2332707fb046"
+  },
+  "nodeGroups": [],
+  "id": "8KzKOUDXTIqNIUCz",
+  "tags": []
+}

@@ -1,0 +1,300 @@
+{
+  "name": "Checkpoint3_WorkerTres_Vicente_Campillay",
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consulta la hoja \"Proyectos\", que contiene el catálogo maestro de proyectos de la empresa con las columnas: ID_PROYECTO (código único, formato PRY-XXX), NOMBRE_PROYECTO, AREA (Packing, Logística, Calidad, Mantenimiento, Campo), ESTADO (Activo/Pausado).\n\nÚsala cuando necesites: validar que un ID_PROYECTO existe, obtener el nombre completo de un proyecto a partir de su ID, verificar si un proyecto está activo antes de aprobar horas extra sobre él.\n\nNo la uses para consultar horas ya registradas ni políticas de la empresa.",
+        "documentId": {
+          "__rl": true,
+          "value": "1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs",
+          "mode": "list",
+          "cachedResultName": "Politicas_Horas_Extras",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1065704717,
+          "mode": "list",
+          "cachedResultName": "Proyectos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs/edit#gid=1065704717"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        768
+      ],
+      "id": "14358ce9-f745-4666-a4e9-4055571aac23",
+      "name": "Consultar_Proyectos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LHTLe9Ls8mE4BhN3",
+          "name": "Google Sheets - VicenteC"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Usa esta Tool cuando el empleado pregunte por el límite, los requisitos o las condiciones de un tipo de hora extra (Hora extra dia habil, Hora extra nocturna, Hora extra sabado, Hora extra domingo, Hora extra feriado, Guardia pasiva, Traslado fuera de horario o Capacitacion fuera de horario), y ya identificaste a cuál de esos tipos se refiere la consulta.\n\nEsta herramienta consulta la plantilla de políticas de tipo de Hora extra filtrada por la columna Categoría (pasa ahí el valor que dedujiste, tal cual aparece en la hoja) y devuelve: Limite_Horas, Requiere_Autorizacion_Previa, Requiere_Codigo_Proyecto y Notas.\n\nActívala siempre antes de responder — nunca contestes en base a la memoria sobre topes de horas o si un tipo de hora exige autorización previa o código de proyecto.\n\nNo actives esta herramienta si todavía no identificaste una categoría o tipo de hora concreta, o si la consulta no corresponde a políticas de horas extra (ej. consultas de sueldo, adelantos u otros temas fuera de esta política); en esos casos no hay nada que consultar.\n\nSi el tipo de horas extras que dedujiste no aparece en los resultados, dilo explícitamente y no inventes un límite ni un requisito. No fuerces la consulta dentro de un tipo de hora que no calza.",
+        "documentId": {
+          "__rl": true,
+          "value": "1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs",
+          "mode": "list",
+          "cachedResultName": "Politicas_Horas_Extras",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Politicas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        176,
+        768
+      ],
+      "id": "9c27bf23-270c-45bb-aae8-89e1ec8a3b06",
+      "name": "Consultar_Politicas_Horas_Extras",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LHTLe9Ls8mE4BhN3",
+          "name": "Google Sheets - VicenteC"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Usa esta Tool cuando el empleado pregunte por las horas extra que ya registró: cuántas lleva acumuladas, en qué proyecto, en qué fecha, o pida un resumen/historial de sus rendiciones.\n\nEsta herramienta consulta la hoja \"Horas_Extra\", que contiene el registro histórico de horas extra ya ingresadas, con las columnas: ID_PROYECTO, PROYECTO, CANTIDAD, DIA e ID_SESSION.\n\nFiltra siempre por ID_SESSION igual al de la sesión actual antes de devolver cualquier resultado. Nunca muestres, sumes ni menciones registros de un ID_SESSION distinto al del usuario que está consultando — cada empleado solo puede ver sus propias horas.\n\nNo actives esta herramienta para consultar límites, requisitos o condiciones de un tipo de hora extra (eso corresponde a Consultar_Politicas_Horas_Extras), ni para validar una rendición nueva.\n\nSi la búsqueda no devuelve registros para esa sesión, dilo explícitamente (ej. \"no tienes horas extra registradas todavía\") y no inventes cifras ni fechas.",
+        "documentId": {
+          "__rl": true,
+          "value": "1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs",
+          "mode": "list",
+          "cachedResultName": "Politicas_Horas_Extras",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 903328479,
+          "mode": "list",
+          "cachedResultName": "Horas_Extras",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Mk9nN3pqJv1tvjitR5RrAO06nqXNFqSQFoAqb9nHBgs/edit#gid=903328479"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        768
+      ],
+      "id": "7f0bac6d-8a07-44e7-90af-e061b16fcc06",
+      "name": "Consultar_Horas_Extras_Ingresadas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LHTLe9Ls8mE4BhN3",
+          "name": "Google Sheets - VicenteC"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=[INICIO DE CONTEXTO COMPARTIDO]\n{{ $json.last_summary }}\n[FIN DEL CONTEXTO COMPARTIDO]\n\nConsulta del usuario:\n{{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Eres el Agente de Consultas, especializado en resolver preguntas de empleados sobre políticas de horas extra y sobre las horas extra que ya han ingresado. No validas ni apruebas rendiciones nuevas — esa función pertenece a otro agente del sistema.\n\n### HERRAMIENTAS DISPONIBLES ###\n- Consultar_Proyectos: catálogo de proyectos (ID_PROYECTO, nombre, área, estado, responsable).\n- Consultar_Politicas_Horas_Extras: límites y requisitos por tipo de hora extra.\n- Consultar_Horas_Extras_Ingresadas: historial de horas ya registradas por el empleado (filtrado por su sesión).\n\n### REGLA DE ORO: NUNCA RESPONDAS DESDE MEMORIA ###\nCualquier dato factual — un límite de horas, si un tipo de hora requiere autorización previa o código de proyecto, cuántas horas lleva acumuladas el empleado, o el estado de un proyecto — debe venir de una llamada a la herramienta correspondiente en este mismo turno. Nunca afirmes ese tipo de dato basándote en el resumen de contexto ni en conversaciones anteriores.\n\n### AISLAMIENTO DE SESIÓN ###\nCuando uses Consultar_Horas_Extras_Ingresadas, la herramienta ya filtra por el ID_SESSION de este usuario. Bajo ninguna circunstancia menciones, compares o sumes datos de otra sesión, aunque el empleado lo pida explícitamente.\n\n### CONTEXTO PREVIO ###\nEl bloque delimitado por [INICIO DE CONTEXTO COMPARTIDO] y [FIN DEL CONTEXTO COMPARTIDO] que recibes junto al mensaje del usuario es un resumen conversacional (para mantener continuidad y entender referencias como \"eso\" o \"esa misma\"), no una fuente de verdad para límites, políticas o cifras. Úsalo solo para entender de qué venía hablando el usuario.\n\n### RECONOCÉ EL TIPO DE MENSAJE ANTES DE RESPONDER ###\nTu forma de responder determina cómo el sistema de memoria clasificará este intercambio. Distinguí cuál de estos cuatro escenarios aplica:\n\n- Consulta que podés responder por completo con tus herramientas: respondé normalmente con la información validada.\n- Consulta que podés responder, pero la situación puntual requiere una excepción, autorización o decisión que tus herramientas no cubren: dá la información disponible y aclará explícitamente que ese caso necesita la revisión de un encargado o supervisor antes de quedar resuelto.\n- El empleado no está consultando — quiere registrar o rendir una hora extra nueva ahora mismo: aclará amablemente que no sos el agente indicado para procesar rendiciones nuevas, indicá que debe hacerlo por el canal de registro correspondiente, y no intentes validar ni aprobar nada.\n- El empleado menciona la intención de proponer un proyecto nuevo o de agregar horas extra en el futuro, sin que sea algo concreto todavía: tomá nota de la intención y aclará que por ahora no hay ninguna acción que tomar, que puede volver a escribir cuando la situación sea concreta.\n\nNo anuncies estas categorías al usuario ni las nombres en tu respuesta — solo asegurate de que tu texto distinga con claridad el escenario, porque de eso depende cómo se registre el caso.\n\n### MANEJO DE CASOS SIN DATOS ###\n- Si Consultar_Politicas_Horas_Extras no devuelve la categoría consultada: dilo explícitamente, no inventes un límite.\n- Si Consultar_Horas_Extras_Ingresadas no devuelve registros: dilo explícitamente (ej. \"no tienes horas extra registradas todavía\"), no inventes cifras.\n- Si Consulta_Proyectos no encuentra el ID o nombre mencionado: dilo explícitamente, no asumas a qué proyecto se refería.\n\n### DATOS CONCRETOS EN LA RESPUESTA ###\nCuando la consulta involucre cifras, tipos de hora extra, códigos de proyecto o requisitos, mencionalos explícitamente en tu respuesta y no los omitas por brevedad — el sistema de memoria depende de que estos datos aparezcan en tu texto para poder registrar los puntos clave de la consulta.\n\n### ESTILO ###\nResponde en español, de forma breve, clara y profesional, como lo haría un analista de RRHH interno. No uses lenguaje de marketing. No estructures la respuesta en JSON: tu salida es texto natural para el empleado.",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -144,
+        480
+      ],
+      "id": "8cff3fbd-aeac-4eae-9ae0-7bbe51cd49c8",
+      "name": "Encargado Consultas"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-5-20250929",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        -304,
+        768
+      ],
+      "id": "9c203ed8-c0e8-4138-8d17-dc41f7731506",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "bmKU10aYUlbJQSTJ",
+          "name": "Anthropic account - CoderHouse"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad6a816c-4c2c-455c-8f82-2dd3319ea379",
+              "name": "output",
+              "value": "={{ $('Encargado Consultas').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "3b8c8fb4-5f92-465b-b455-64a3bfc1a61e",
+              "name": "output_firstItem",
+              "value": "={{ $('Encargado Consultas').first().json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        464
+      ],
+      "id": "2facaa74-0370-4c4d-9ad5-3cee26c9e7e7",
+      "name": "Return"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "last_summary",
+              "type": "any"
+            },
+            {
+              "name": "chatInput",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "8c988426-f556-421d-a6f5-fdccd804d28d",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -352,
+        480
+      ]
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "last_summary": "SIN HISTORIAL PREVIO. Es la primera conversación con este Usuario.",
+          "chatInput": "Cuantas horas extras puedo hacer dentro de la semana?"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Consultar_Proyectos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Encargado Consultas",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar_Politicas_Horas_Extras": {
+      "ai_tool": [
+        [
+          {
+            "node": "Encargado Consultas",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar_Horas_Extras_Ingresadas": {
+      "ai_tool": [
+        [
+          {
+            "node": "Encargado Consultas",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Encargado Consultas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Encargado Consultas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encargado Consultas": {
+      "main": [
+        [
+          {
+            "node": "Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d9a4cfb9-2b89-4058-873a-6bff3c25604d",
+  "meta": {
+    "instanceId": "e4adfb8248a637bb52a45eab840dc805cd709e062fef9162bbbf2332707fb046"
+  },
+  "nodeGroups": [],
+  "id": "vKqk9TCipcM5ZxVP",
+  "tags": []
+}
